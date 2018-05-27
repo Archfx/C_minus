@@ -1,17 +1,36 @@
+
+%x BLOCK_COMMENT
 %{
     #include "parser.tab.h"
+    extern int yylineno;
 
-    void yyerror (char const *s) {
-        fprintf (stderr, "%s\n", s);
+    void yyerror (const char *str) {
+
+        fprintf (stderr, "in Line %d :%s\n",yylineno,str);
     }
-    // extern int line_number
+    extern char* yytext;
+
+    
+
 %}
-%option noyywrap    
+%option noyywrap
+%option yylineno    
 
 %%
+<INITIAL>"/*"         {BEGIN(BLOCK_COMMENT);}
+<BLOCK_COMMENT>"*/"      {BEGIN(INITIAL);}
+<BLOCK_COMMENT>[^*\n]+   ;
+<BLOCK_COMMENT>"*"       ;
+<BLOCK_COMMENT>\n        { yylineno++; }
+<BLOCK_COMMENT><<EOF>>      {
+                            yyerror("Unfinished Comment");
+                            yyterminate();
+                        }
 
-"else"                      return ELSE;
+
+
 "if"                        return IF;
+"else"                      return ELSE;
 "int"                       return INT;
 "return"                    return RETURN;
 "void"                      return VOID;
@@ -35,11 +54,11 @@
 ")"                         return RIGHT_BRACKET;
 "["                         return LEFT_SQUAR_BRACKET;
 "]"                         return RIGHT_SQUAR_BRACKET;
-"/*"(.|\n)*"*/"             ;
 [a-zA-Z][a-zA-Z]*           return ID;
 [0-9][0-9]*                 return NUM;
 [ \t\r]+                    ;
 [\n]                        ;
-.                           yyerror("Error in Syntax! in line "+yylineno);
+.                           yyerror(" Syntax Error!");
+
 
 

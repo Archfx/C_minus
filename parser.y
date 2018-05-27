@@ -43,7 +43,7 @@
 program: declaration-list;
 declaration-list: declaration-list declaration | declaration;
 declaration: var-declaration | fun-declaration;
-var-declaration: type-specifier ID END_LINE | type-specifier ID LEFT_SQUAR_BRACKET NUM RIGHT_SQUAR_BRACKET;
+var-declaration: type-specifier ID END_LINE | type-specifier ID LEFT_SQUAR_BRACKET NUM RIGHT_SQUAR_BRACKET END_LINE;
 type-specifier: INT | VOID;
 fun-declaration: type-specifier ID LEFT_BRACKET params RIGHT_BRACKET compound-stmt;
 params: param-list | VOID;
@@ -72,7 +72,11 @@ call: ID LEFT_BRACKET args RIGHT_BRACKET;
 args: arg-list | %empty;
 arg-list: arg-list SEPERATE expression | expression;
 
-%%                                                                              
+%%
+
+#include <stdio.h>
+#include <ctype.h>
+
 int main () {     
   yyparse ();
 }
